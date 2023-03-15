@@ -1,33 +1,37 @@
-import mongoose from 'mongoose'
 import dotenv from 'dotenv'
 dotenv.config()
-mongoose.connect(process.env.URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-})
+const { MongoClient } = require('mongodb')
 
-let postSchema = new mongoose.Schema({
-    _id: String,
-    index: Number,
-    name: String,
-    title: String,
-    url: String,
-    id: String,
-    permalink: String,
-    selftext: String,
-    source: String,
-})
+const mongoClient = new MongoClient(process.env.MONGODB_URI)
 
-let Post = mongoose.model('Post', postSchema)
+const clientPromise = mongoClient.connect()
+
 export const handler = async (event, context) => {
-    const { page } = event.queryStringParameters
+    const { page, search } = event.queryStringParameters
+    const database = (await clientPromise).db(process.env.MONGODB_DATABASE)
+    const collection = database.collection(process.env.MONGODB_COLLECTION)
 
-    const posts = await Post.find()
+    if (search) {
+        const posts = await collection
+            .find({
+                $or: [
+                    { selftext: { $regex: new RegExp(search, 'i') } },
+                    { title: { $regex: new RegExp(search, 'i') } },
+                ],
+            })
+            .toArray()
+
+        return {
+            statusCode: 200,
+            body: JSON.stringify(posts),
+        }
+    }
+
+    const posts = await collection
+        .find({})
         .skip(page * 10)
         .limit(10)
-        .then((posts) => {
-            return posts
-        })
+        .toArray()
 
     return {
         statusCode: 200,

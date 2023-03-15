@@ -100,14 +100,21 @@ const addSource = async (posts) => {
     return posts
 }
 
-const baseURLNetlify = '/.netlify/functions/getPost'
+const baseURLNetlify = '/.netlify/functions/'
 
 export const getPosts = async (page) => {
-    const response = await axios.get(baseURLNetlify + `?page=${page}`)
-    return response
+    const response = await axios.get(baseURLNetlify + `posts?page=${page}`)
+    return response.data
 }
 
 export const getPost = async (id) => {
-    const response = await axios.get(baseURLNetlify + `?id=${id}`)
-    return response
+    const response = await axios.get(baseURLNetlify + `post?id=${id}`)
+    return response.data
+}
+
+export const getPostsBySearch = async (searchQuery) => {
+    const response = await axios.get(
+        baseURLNetlify + `posts?search=${searchQuery}`
+    )
+    return response.data
 }

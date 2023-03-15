@@ -1,29 +1,41 @@
 import { useState, useEffect } from 'react'
-import { getPosts } from './api'
+import { getPosts, getPostsBySearch, getPost } from './api'
 import Next from '/next.svg'
 import Back from '/back.svg'
-import { useLocation } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
 function History() {
-    const location = useLocation()
     const [posts, setPosts] = useState([])
     const [page, setPage] = useState(0)
+    const [search, setSearch] = useState('')
+    const [searchResultText, setSearchResultText] = useState('')
     const [loading, setLoading] = useState(false)
 
     const fetchPosts = async () => {
         setLoading(true)
         const posts = await getPosts(page)
+        setSearchResultText('')
         setPosts(posts)
         setLoading(false)
     }
 
-    // useEffect(() => {
-    //     if (location.state?.posts) setPosts(location.state.posts)
-    //     else fetchPosts()
-    // }, [page])
+    const fetchSearch = async () => {
+        setLoading(true)
+        const posts = await getPostsBySearch(search)
+        setSearchResultText(`"${posts.length}" sonuc bulundu`)
+        setPosts(posts)
+        setLoading(false)
+    }
+
+    useEffect(() => {
+        if (location.state?.posts) setPosts(location.state.posts)
+        else {
+            fetchPosts()
+            setSearch('')
+        }
+    }, [page])
 
     const notify = (url) => {
         if (!url) return toast.error('Kaynak Bulunamadı')
@@ -53,12 +65,21 @@ function History() {
         )
     }
 
+    const onSearch = (e) => {
+        e.preventDefault()
+        fetchSearch()
+    }
+
     return (
         <div className="bg-second">
             <div className="flex flex-row justify-center md:space-x-10 lg:space-x-20 text-5xl text-center py-10">
                 <span
                     className="hover:cursor-pointer"
-                    onClick={() => setPage(page - 1)}
+                    onClick={() =>
+                        setPage((page) => {
+                            return page > 0 ? page - 1 : 0
+                        })
+                    }
                 >
                     <img src={Back} width={50} height={50} />
                 </span>
@@ -70,6 +91,26 @@ function History() {
                     onClick={() => setPage(page + 1)}
                 >
                     <img src={Next} width={50} height={50} />
+                </span>
+            </div>
+            <div className="flex flex-col justify-center align-center ">
+                <div className="flex mx-auto">
+                    <input
+                        type="text"
+                        onChange={(e) => setSearch(e.target.value)}
+                        value={search}
+                    />
+                    <button
+                        className="bg-blue-500 hover:bg-blue-700 w-fit text-white font-bold py-2 px-4 rounded"
+                        onClick={onSearch}
+                    >
+                        Ara
+                    </button>
+                </div>
+
+                <span className="text-center text-2xl">
+                    {searchResultText !== '' && searchResultText}
+                    {searchResultText === '' && `${page + 1}. Sayfa`}
                 </span>
             </div>
             <div className="flex flex-col justify-center lg:px-20">
@@ -88,12 +129,13 @@ function History() {
                             >
                                 Daha fazla...
                             </Link>
-                            <Link
-                                to={`https://www.reddit.com${post.permalink}`}
+                            <a
+                                target={'_blank'}
+                                href={`https://www.reddit.com${post.permalink}`}
                                 className="bg-blue-500 hover:bg-blue-700 w-fit text-white font-bold py-2 px-4 rounded"
                             >
                                 Gönderi Linki
-                            </Link>
+                            </a>
                             <button
                                 onClick={() => notify(post.source)}
                                 className="bg-blue-500 hover:bg-blue-700 w-fit text-white font-bold py-2 px-4 rounded"
