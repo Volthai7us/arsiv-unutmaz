@@ -1,19 +1,23 @@
 import axios from 'axios'
 import fs from 'fs'
+let count = 0
+const limit = 100
 const baseURL = 'https://www.reddit.com/r/ArsivUnutmaz/'
 
-const getHotPosts = async (before, after) => {
+const getNewPosts = async (before, after) => {
     if (before) {
         return axios
-            .get(`${baseURL}hot.json?before=${before}`)
+            .get(`${baseURL}new.json?before=${before}&limit=${limit}`)
             .then((res) => res.data.data.children)
     }
     if (after) {
         return axios
-            .get(`${baseURL}hot.json?after=${after}`)
+            .get(`${baseURL}new.json?after=${after}&limit=${limit}`)
             .then((res) => res.data.data.children)
     }
-    return axios.get(`${baseURL}hot.json`).then((res) => res.data.data.children)
+    return axios
+        .get(`${baseURL}new.json?limit=${limit}`)
+        .then((res) => res.data.data.children)
 }
 
 const getComments = async (id) => {
@@ -24,7 +28,6 @@ const getComments = async (id) => {
 }
 
 const getCommentText = async (id) => {
-    console.log(`https://www.reddit.com/api/info.json?id=${id}`)
     return axios
         .get(`https://www.reddit.com/api/info.json?id=${id}`)
         .then((res) => res.data.data.children[0].data.body)
@@ -35,28 +38,19 @@ const findSource = async (comments) => {
     for (let i = 0; i < comments.length; i++) {
         let author = comments[i].data.author
         if (author === 'AutoModerator') {
-            if (
-                !comments[i].data ||
-                !comments[i].data.replies ||
-                !comments[i].data.replies.data ||
-                !comments[i].data.replies.data.children ||
-                !comments[i].data.replies.data.children[0]
-            ) {
-                return null
-            }
             const commentId =
-                comments[i].data.replies.data.children[0].data.name
+                comments[i].data?.replies?.data?.children[0]?.data?.name
+            if (!commentId) return
             const commentText = await getCommentText(commentId)
-            console.log(commentText)
             return commentText
         }
     }
 }
 
 const simplifyPosts = (posts) => {
-    console.log(posts[0])
     return posts.map((post) => {
         return {
+            index: count++,
             name: post.data.name,
             title: post.data.title,
             url: post.data.url,
@@ -73,27 +67,35 @@ const addSource = async (posts) => {
         const source = await findSource(comments)
         if (source) {
             posts[i].source = source
+        } else {
+            if (!posts[i].url.includes('reddit.com')) {
+                posts[i].source = posts[i].url
+            } else {
+                posts[i].source = null
+            }
         }
     }
     return posts
 }
 
 const getAllPosts = async () => {
-    let posts = await getHotPosts()
+    let posts = await getNewPosts()
     posts = simplifyPosts(posts)
     posts = await addSource(posts)
     let lastPost = posts[posts.length - 1].name
     let allPosts = posts
-    let count = 0
 
-    while (false) {
-        count++
-        posts = await getHotPosts(null, lastPost)
+    fs.writeFileSync('posts.json', JSON.stringify(allPosts))
+
+    while (posts.length > 0) {
+        console.log('all posts', allPosts.length)
+        posts = await getNewPosts(null, lastPost)
         posts = simplifyPosts(posts)
         posts = await addSource(posts)
+        lastPost = posts[posts.length - 1]?.name
         allPosts = allPosts.concat(posts)
+        fs.writeFileSync('posts.json', JSON.stringify(allPosts))
     }
-    fs.writeFileSync('posts.json', JSON.stringify(allPosts))
 }
 
 getAllPosts()
