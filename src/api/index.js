@@ -37,8 +37,14 @@ const getComments = async (id) => {
         .catch((err) => console.log(err))
 }
 
+export const getInfo = async (id) => {
+    return axios
+        .get(`https://www.reddit.com/api/info.json?id=${id}`)
+        .then((res) => res.data.data.children[0].data)
+        .catch((err) => console.log(err))
+}
+
 const getCommentText = async (id) => {
-    console.log(`https://www.reddit.com/api/info.json?id=${id}`)
     return axios
         .get(`https://www.reddit.com/api/info.json?id=${id}`)
         .then((res) => res.data.data.children[0].data.body)
@@ -61,14 +67,12 @@ const findSource = async (comments) => {
             const commentId =
                 comments[i].data.replies.data.children[0].data.name
             const commentText = await getCommentText(commentId)
-            console.log(commentText)
             return commentText
         }
     }
 }
 
 const simplifyPosts = (posts) => {
-    console.log(posts)
     return posts.map((post) => {
         return {
             name: post.data.name,
@@ -87,6 +91,10 @@ const addSource = async (posts) => {
         const source = await findSource(comments)
         if (source) {
             posts[i].source = source
+        } else {
+            if (!posts[i].url.includes('reddit')) {
+                posts[i].source = posts[i].url
+            }
         }
     }
     return posts

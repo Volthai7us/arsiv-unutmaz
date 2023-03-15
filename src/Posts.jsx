@@ -1,12 +1,10 @@
 import { useState, useEffect } from 'react'
 import { getHotPosts } from './api'
-import Next from '/next.svg'
-import Back from '/back.svg'
-import { useLocation } from 'react-router-dom'
+import Next from '../public/next.svg'
+import Back from '../public/back.svg'
 import { Link } from 'react-router-dom'
 
 function App() {
-    const location = useLocation()
     const [posts, setPosts] = useState([])
     const [lastPostName, setLastPostName] = useState()
     const [firstPostName, setFirstPostName] = useState()
@@ -22,8 +20,7 @@ function App() {
     }
 
     useEffect(() => {
-        if (location.state?.posts) setPosts(location.state.posts)
-        else fetchPosts()
+        if (!posts.length) fetchPosts()
     }, [])
 
     const onSourceClick = (url) => {
