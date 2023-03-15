@@ -1,5 +1,7 @@
 import axios from 'axios'
 import fs from 'fs'
+import exctractUrls from 'extract-urls'
+
 let count = 0
 const limit = 100
 const baseURL = 'https://www.reddit.com/r/ArsivUnutmaz/'
@@ -97,5 +99,45 @@ const getAllPosts = async () => {
         fs.writeFileSync('posts.json', JSON.stringify(allPosts))
     }
 }
+
+function linkify(text) {
+    var urlRegex =
+        /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi
+    return text.replace(urlRegex, function (url) {
+        return '<a href="' + url + '">' + url + '</a>'
+    })
+}
+
+const printAllSources = async () => {
+    const posts = JSON.parse(fs.readFileSync('posts.json'))
+    for (let i = 0; i < posts.length; i++) {
+        const post = posts[i]
+        const source = post.source
+        if (source) {
+            if (typeof source === 'string') {
+                let sources = exctractUrls(source)
+                post.source = sources
+            }
+            for (let j = 0; j < post.source.length; j++) {
+                if (post.source[j].includes('redd.it')) {
+                    console.log('redd.it')
+                    continue
+                }
+                console.log('source', post.source[j])
+                const source = post.source[j]
+                try {
+                    const response = await axios.get(source)
+                    const html = response.data
+                    post.html = html
+                } catch (err) {
+                    console.log('error')
+                }
+            }
+        }
+    }
+    fs.writeFileSync('posts_html_source_array.json', JSON.stringify(posts))
+}
+
+// printAllSources()
 
 getAllPosts()

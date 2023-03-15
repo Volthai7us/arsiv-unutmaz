@@ -99,3 +99,15 @@ const addSource = async (posts) => {
     }
     return posts
 }
+
+const baseURLNetlify = '/.netlify/functions/getPost'
+
+export const getPosts = async (page) => {
+    const response = await axios.get(baseURLNetlify + `?page=${page}`)
+    return response
+}
+
+export const getPost = async (id) => {
+    const response = await axios.get(baseURLNetlify + `?id=${id}`)
+    return response
+}
