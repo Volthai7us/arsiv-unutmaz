@@ -4,6 +4,9 @@ import Next from '/next.svg'
 import Back from '/back.svg'
 import { useLocation } from 'react-router-dom'
 import { Link } from 'react-router-dom'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 function App() {
     const location = useLocation()
@@ -26,10 +29,12 @@ function App() {
         else fetchPosts()
     }, [])
 
-    const onSourceClick = (url) => {
-        if (!url) return alert('Kaynak bulunamadı.')
-        window.open(url, '_blank')
+   
+    const notify = (url) => {
+        if(!url) return toast.error("Kaynak Bulunamadı")
+        window.open(url,'_blank')
     }
+
 
     if (loading) {
         return (
@@ -77,42 +82,49 @@ function App() {
                 {posts.map((post) => (
                     <div
                         key={post.id}
-                        className="shadow-xl bg-first justify-center space-y-4 flex flex-col p-4 m-4 h-fit text-center"
+                        className="rounded shadow-xl bg-first justify-center space-y-4 flex flex-col p-4 m-4 h-fit text-center"
                     >
                         <h2 className="text-xl">{post.title}</h2>
                         <p className="line-clamp-2">{post.selftext}</p>
-                        <a
-                            href={post.url}
-                            target="_blank"
-                            className="text-blue-500"
-                        >
-                            Post'a eklenen link
-                        </a>
-                        <a
-                            href={`https://www.reddit.com${post.permalink}`}
-                            className="text-blue-500"
-                            target="_blank"
-                        >
-                            Post Link
-                        </a>
                         <div className="flex flex-row justify-center gap-4 text-center py-4">
                             <Link
                                 to={`/post/${post.name}`}
                                 state={{ post, posts }}
                                 className="bg-blue-500 hover:bg-blue-700 w-fit text-white font-bold py-2 px-4 rounded"
                             >
-                                View More
+                                Daha fazla...
                             </Link>
-                            <button
-                                onClick={() => onSourceClick(post.source)}
+                            <Link
+                                to={`https://www.reddit.com${post.permalink}`}
+                                
                                 className="bg-blue-500 hover:bg-blue-700 w-fit text-white font-bold py-2 px-4 rounded"
                             >
-                                {post.source ? 'View Source' : 'No Source'}
+                                Gönderi Linki
+                            </Link>
+                            <button
+                                onClick={() => notify(post.source)}
+                                className="bg-blue-500 hover:bg-blue-700 w-fit text-white font-bold py-2 px-4 rounded"
+                            >
+                                {post.source ? 'Kaynağı görüntüle' : 'Kaynak yok'}
                             </button>
+                            {<ToastContainer
+                                position="top-center"
+                                autoClose={5000}
+                                hideProgressBar={false}
+                                newestOnTop={false}
+                                closeOnClick
+                                rtl={false}
+                                pauseOnFocusLoss
+                                draggable
+                                pauseOnHover
+                                theme="colored"
+                            />}
+
                         </div>
                     </div>
                 ))}
             </div>
+
         </div>
     )
 }
