@@ -10,7 +10,7 @@ const Post = () => {
     }
 
     return (
-        <div className="flex flex-col border-[1px] border-first bg-[#041C32] shadow-xl w-[80%] mx-auto space-y-4 p-4 my-20">
+        <div className="flex flex-col  shadow-xl border-[1px] border-first bg-[#041C32] shadow-xl w-[80%] mx-auto space-y-4 p-4 my-20">
             <h2 className="text-xl text-center text-second">{post.title}</h2>
             <hr className="w-[80%] mx-auto" />
             <p className="line-clamp-2 text-center text-second">

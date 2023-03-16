@@ -193,7 +193,7 @@ const Post = (props) => {
     return (
         <article
             key={post.id}
-            className="rounded shadow-xl bg-[#041C32] border-[rgba(255,255,255,0.1)] justify-between space-y-4 flex flex-col p-4 m-4 text-center"
+            className="rounded border-[1px] shadow-xl bg-[#041C32] border-[rgba(255,255,255,0.1)] justify-between space-y-4 flex flex-col p-4 m-4 text-center"
         >
             <h2 className="text-xl text-second">{post.title}</h2>
             <hr className="w-[80%] mx-auto" />
