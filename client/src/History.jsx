@@ -160,7 +160,7 @@ function History() {
                 <span className="text-center text-second text-2xl">
                     {searchResultText !== '' && searchResultText}
                 </span>
-                <div className="grid grid-cols-4 mx-auto justify-center flex-wrap w-[50%]">
+                <div className="grid grid-cols-4 mx-auto justify-center flex-wrap lg:w-[50%]">
                     {popularTags.map((tag) => (
                         <button
                             className="bg-button hover:bg-buttonHover hover:text-button duration-300 text-white font-bold py-2 px-4 rounded m-2"
@@ -174,7 +174,7 @@ function History() {
                     ))}
                 </div>
             </div>
-            <div className="grid grid-cols-2 justify-stretch items-stretch flex flex-col justify-center lg:px-20">
+            <div className="flex flex-col lg:grid lg:grid-cols-2 justify-stretch items-stretch flex flex-col justify-center lg:px-20">
                 {posts.map((post) => (
                     <Post key={post.id} post={post} posts={posts} />
                 ))}
