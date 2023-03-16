@@ -116,7 +116,7 @@ function History() {
     }
 
     return (
-        <div className="bg-gradient-to-r from-[#080a0f] via-[#191825] to-[#080a0f]">
+        <div className="">
             <div className="flex flex-row justify-center md:space-x-10 lg:space-x-20 text-5xl text-center py-10">
                 <span
                     className="hover:cursor-pointer"
