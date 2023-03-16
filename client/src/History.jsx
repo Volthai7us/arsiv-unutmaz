@@ -116,7 +116,7 @@ function History() {
     }
 
     return (
-        <div className="bg-second">
+        <div className="bg-gradient-to-r from-[#080a0f] via-[#191825] to-[#080a0f]">
             <div className="flex flex-row justify-center md:space-x-10 lg:space-x-20 text-5xl text-center py-10">
                 <span
                     className="hover:cursor-pointer"
@@ -128,7 +128,7 @@ function History() {
                 >
                     <img src={Back} width={50} height={50} />
                 </span>
-                <h1 className="text-3xl text-center text-fourth">
+                <h1 className="text-3xl text-center text-first">
                     Arsiv Unutmaz
                 </h1>
                 <span
@@ -139,30 +139,31 @@ function History() {
                 </span>
             </div>
             <div className="flex flex-col justify-center align-center ">
-                <div className="flex mx-auto">
+                <div className="flex mx-auto space-x-4 ">
                     <input
                         type="text"
                         onChange={(e) => setSearch(e.target.value)}
                         value={search}
+                        className="bg-second focus:outline-none focus:shadow-outline border border-gray-300 rounded-lg py-2 px-4 block w-full appearance-none leading-normal"
                     />
                     <button
-                        className="bg-blue-500 hover:bg-blue-700 w-fit text-white font-bold py-2 px-4 rounded"
+                        className="bg-button hover:bg-buttonHover hover:text-button duration-300 w-fit text-white font-bold py-2 px-4 rounded"
                         onClick={onSearch}
                     >
                         Ara
                     </button>
                 </div>
 
-                <span className="text-center text-2x absolute top-5 right-5">
+                <span className="text-center text-second text-2x absolute top-5 right-5">
                     {searchResultText === '' && `${page + 1}. Sayfa`}
                 </span>
-                <span className="text-center text-2xl">
+                <span className="text-center text-second text-2xl">
                     {searchResultText !== '' && searchResultText}
                 </span>
-                <div className="flex flex-row mx-auto justify-center flex-wrap w-[50%]">
+                <div className="grid grid-cols-4 mx-auto justify-center flex-wrap w-[50%]">
                     {popularTags.map((tag) => (
                         <button
-                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded m-2"
+                            className="bg-button hover:bg-buttonHover hover:text-button duration-300 text-white font-bold py-2 px-4 rounded m-2"
                             onClick={() => {
                                 setSearch(tag.tag)
                                 fetchSearch(tag.tag)
@@ -173,7 +174,7 @@ function History() {
                     ))}
                 </div>
             </div>
-            <div className="flex flex-col justify-center lg:px-20">
+            <div className="grid grid-cols-2 justify-stretch items-stretch flex flex-col justify-center lg:px-20">
                 {posts.map((post) => (
                     <Post key={post.id} post={post} posts={posts} />
                 ))}
@@ -190,30 +191,31 @@ const Post = (props) => {
         window.open(url, '_blank')
     }
     return (
-        <div
+        <article
             key={post.id}
-            className="rounded shadow-xl bg-first justify-center space-y-4 flex flex-col p-4 m-4 h-fit text-center"
+            className="rounded shadow-xl bg-[#041C32] border-[rgba(255,255,255,0.1)] justify-between space-y-4 flex flex-col p-4 m-4 text-center"
         >
-            <h2 className="text-xl">{post.title}</h2>
-            <p className="line-clamp-2">{post.selftext}</p>
+            <h2 className="text-xl text-second">{post.title}</h2>
+            <hr className="w-[80%] mx-auto" />
+            <p className="line-clamp-2 text-second">{post.selftext}</p>
             <div className="flex flex-row justify-center gap-4 text-center py-4">
                 <Link
                     to={`/post/${post.name}`}
                     state={{ post, posts }}
-                    className="bg-blue-500 hover:bg-blue-700 w-fit text-white font-bold py-2 px-4 rounded"
+                    className="bg-button hover:bg-buttonHover hover:text-button duration-300 w-fit text-white font-bold py-2 px-4 rounded"
                 >
                     Daha fazla...
                 </Link>
                 <a
                     target={'_blank'}
                     href={`https://www.reddit.com${post.permalink}`}
-                    className="bg-blue-500 hover:bg-blue-700 w-fit text-white font-bold py-2 px-4 rounded"
+                    className="bg-button hover:bg-buttonHover hover:text-button duration-300 w-fit text-white font-bold py-2 px-4 rounded"
                 >
                     Gönderi Linki
                 </a>
                 <button
                     onClick={() => notify(post.source)}
-                    className="bg-blue-500 hover:bg-blue-700 w-fit text-white font-bold py-2 px-4 rounded"
+                    className="bg-button hover:bg-buttonHover hover:text-button duration-300 w-fit text-white font-bold py-2 px-4 rounded"
                 >
                     {post.source ? 'Kaynağı görüntüle' : 'Kaynak yok'}
                 </button>
@@ -232,7 +234,7 @@ const Post = (props) => {
                     />
                 }
             </div>
-        </div>
+        </article>
     )
 }
 

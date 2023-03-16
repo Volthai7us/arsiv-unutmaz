@@ -4,10 +4,12 @@ module.exports = {
     theme: {
         extend: {
             colors: {
-                first: '#eeeeee',
-                second: '#dddddd',
-                third: '#AF0404',
-                fourth: '#414141',
+                first: '#E2DCC8',
+                second: '#D8D8D8',
+                third: '#E2DCC8',
+                fourth: '#E2DCC8',
+                button: '#647E68',
+                buttonHover: '#F0F0F0',
             },
         },
     },
