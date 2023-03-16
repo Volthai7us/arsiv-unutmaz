@@ -14,10 +14,11 @@ export const handler = async (event, context) => {
     if (search) {
         const posts = await collection
             .find({
-                $or: [
-                    { selftext: { $regex: new RegExp(search, 'i') } },
-                    { title: { $regex: new RegExp(search, 'i') } },
-                ],
+                // $or: [
+                //     // { selftext: { $regex: new RegExp(search, 'i') } },
+                //     { title: { $regex: new RegExp(search, 'i') } },
+                // ],
+                title: { $regex: new RegExp(search, 'i') },
             })
             .toArray()
 

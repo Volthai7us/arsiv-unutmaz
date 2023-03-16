@@ -1,6 +1,6 @@
 export default function Footer() {
     return (
-        <div className="flex flex-col items-center justify-center w-full h-20 bg-gray-200">
+        <div className="flex flex-col items-center justify-center w-full h-fit py-10 bg-gray-200">
             <p className="text-gray-600 text-sm">
                 Bu sayfadaki tüm içerikler Arsiv Unutmaz Subreddit'indeki
                 içeriklerden otomatik alınmıştır.

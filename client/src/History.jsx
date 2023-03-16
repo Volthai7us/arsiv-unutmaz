@@ -12,6 +12,56 @@ function History() {
     const [search, setSearch] = useState('')
     const [searchResultText, setSearchResultText] = useState('')
     const [loading, setLoading] = useState(false)
+    const popularTags = [
+        {
+            tag: 'şubat',
+            count: 71,
+        },
+        {
+            tag: '2023',
+            count: 54,
+        },
+        {
+            tag: '2021',
+            count: 40,
+        },
+        {
+            tag: 'kasım',
+            count: 37,
+        },
+        {
+            tag: 'erdoğan',
+            count: 34,
+        },
+        {
+            tag: 'halk',
+            count: 32,
+        },
+        {
+            tag: 'akp',
+            count: 32,
+        },
+        {
+            tag: 'başkanı',
+            count: 28,
+        },
+        {
+            tag: 'deprem',
+            count: 27,
+        },
+        {
+            tag: 'dedi',
+            count: 20,
+        },
+        {
+            tag: 'bakanı',
+            count: 20,
+        },
+        {
+            tag: 'türk',
+            count: 20,
+        },
+    ]
 
     const fetchPosts = async () => {
         setLoading(true)
@@ -21,10 +71,10 @@ function History() {
         setLoading(false)
     }
 
-    const fetchSearch = async () => {
+    const fetchSearch = async (s) => {
         setLoading(true)
-        const posts = await getPostsBySearch(search)
-        setSearchResultText(`"${posts.length}" sonuc bulundu`)
+        const posts = await getPostsBySearch(s || search)
+        setSearchResultText(`${posts.length} sonuc bulundu`)
         setPosts(posts)
         setLoading(false)
     }
@@ -36,11 +86,6 @@ function History() {
             setSearch('')
         }
     }, [page])
-
-    const notify = (url) => {
-        if (!url) return toast.error('Kaynak Bulunamadı')
-        window.open(url, '_blank')
-    }
 
     if (loading) {
         return (
@@ -108,59 +153,84 @@ function History() {
                     </button>
                 </div>
 
-                <span className="text-center text-2xl">
-                    {searchResultText !== '' && searchResultText}
+                <span className="text-center text-2x absolute top-5 right-5">
                     {searchResultText === '' && `${page + 1}. Sayfa`}
                 </span>
+                <span className="text-center text-2xl">
+                    {searchResultText !== '' && searchResultText}
+                </span>
+                <div className="flex flex-row mx-auto justify-center flex-wrap w-[50%]">
+                    {popularTags.map((tag) => (
+                        <button
+                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded m-2"
+                            onClick={() => {
+                                setSearch(tag.tag)
+                                fetchSearch(tag.tag)
+                            }}
+                        >
+                            <span className="">{tag.tag}</span>
+                        </button>
+                    ))}
+                </div>
             </div>
             <div className="flex flex-col justify-center lg:px-20">
                 {posts.map((post) => (
-                    <div
-                        key={post.id}
-                        className="rounded shadow-xl bg-first justify-center space-y-4 flex flex-col p-4 m-4 h-fit text-center"
-                    >
-                        <h2 className="text-xl">{post.title}</h2>
-                        <p className="line-clamp-2">{post.selftext}</p>
-                        <div className="flex flex-row justify-center gap-4 text-center py-4">
-                            <Link
-                                to={`/post/${post.name}`}
-                                state={{ post, posts }}
-                                className="bg-blue-500 hover:bg-blue-700 w-fit text-white font-bold py-2 px-4 rounded"
-                            >
-                                Daha fazla...
-                            </Link>
-                            <a
-                                target={'_blank'}
-                                href={`https://www.reddit.com${post.permalink}`}
-                                className="bg-blue-500 hover:bg-blue-700 w-fit text-white font-bold py-2 px-4 rounded"
-                            >
-                                Gönderi Linki
-                            </a>
-                            <button
-                                onClick={() => notify(post.source)}
-                                className="bg-blue-500 hover:bg-blue-700 w-fit text-white font-bold py-2 px-4 rounded"
-                            >
-                                {post.source
-                                    ? 'Kaynağı görüntüle'
-                                    : 'Kaynak yok'}
-                            </button>
-                            {
-                                <ToastContainer
-                                    position="top-center"
-                                    autoClose={5000}
-                                    hideProgressBar={false}
-                                    newestOnTop={false}
-                                    closeOnClick
-                                    rtl={false}
-                                    pauseOnFocusLoss
-                                    draggable
-                                    pauseOnHover
-                                    theme="colored"
-                                />
-                            }
-                        </div>
-                    </div>
+                    <Post key={post.id} post={post} posts={posts} />
                 ))}
+            </div>
+        </div>
+    )
+}
+
+const Post = (props) => {
+    const { post, posts } = props
+
+    const notify = (url) => {
+        if (!url) return toast.error('Kaynak Bulunamadı')
+        window.open(url, '_blank')
+    }
+    return (
+        <div
+            key={post.id}
+            className="rounded shadow-xl bg-first justify-center space-y-4 flex flex-col p-4 m-4 h-fit text-center"
+        >
+            <h2 className="text-xl">{post.title}</h2>
+            <p className="line-clamp-2">{post.selftext}</p>
+            <div className="flex flex-row justify-center gap-4 text-center py-4">
+                <Link
+                    to={`/post/${post.name}`}
+                    state={{ post, posts }}
+                    className="bg-blue-500 hover:bg-blue-700 w-fit text-white font-bold py-2 px-4 rounded"
+                >
+                    Daha fazla...
+                </Link>
+                <a
+                    target={'_blank'}
+                    href={`https://www.reddit.com${post.permalink}`}
+                    className="bg-blue-500 hover:bg-blue-700 w-fit text-white font-bold py-2 px-4 rounded"
+                >
+                    Gönderi Linki
+                </a>
+                <button
+                    onClick={() => notify(post.source)}
+                    className="bg-blue-500 hover:bg-blue-700 w-fit text-white font-bold py-2 px-4 rounded"
+                >
+                    {post.source ? 'Kaynağı görüntüle' : 'Kaynak yok'}
+                </button>
+                {
+                    <ToastContainer
+                        position="top-center"
+                        autoClose={2000}
+                        hideProgressBar={false}
+                        newestOnTop={false}
+                        closeOnClick
+                        rtl={false}
+                        pauseOnFocusLoss
+                        draggable
+                        pauseOnHover
+                        theme="colored"
+                    />
+                }
             </div>
         </div>
     )
